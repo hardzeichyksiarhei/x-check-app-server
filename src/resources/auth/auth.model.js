@@ -5,4 +5,4 @@ class AuthUser {
     }
 }
 
-export default AuthUser;
+module.exports = AuthUser;
