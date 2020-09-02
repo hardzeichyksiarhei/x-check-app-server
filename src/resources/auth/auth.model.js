@@ -4,3 +4,5 @@ class AuthUser {
         return { id, login, avatar_url, email, role: 'user' };
     }
 }
+
+export default AuthUser;
