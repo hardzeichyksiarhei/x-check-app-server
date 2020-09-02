@@ -6,8 +6,7 @@ const app = express();
 const authRouter = require('./resources/auth/auth.router');
 
 app.use(bodyParser.json());
-app.use(bodyParser.json({ type: "text/*" }));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 
