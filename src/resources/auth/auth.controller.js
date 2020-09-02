@@ -1,6 +1,7 @@
 const FormData = require("form-data");
 const fetch = require("node-fetch");
 const catchErrors = require('../../common/catchErrors');
+const AuthUser = require('./auth.model');
 
 exports.authenticate = catchErrors(async (req, res) => {
     const { clientId, redirectURI, clientSecret, code } = req.body;
@@ -27,8 +28,8 @@ exports.authenticate = catchErrors(async (req, res) => {
             );
         })
         .then(response => response.json())
-        .then(response => {
-            return res.status(200).json(response);
+        .then(user => {
+            return res.status(200).json(AuthUser.toResponse(user));
         })
         .catch(error => {
             return res.status(400).json(error);
