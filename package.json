@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dateformat": "^3.0.3",
     "express": "^4.17.1",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.0"
