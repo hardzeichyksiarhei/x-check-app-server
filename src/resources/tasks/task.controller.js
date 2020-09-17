@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const slug = require("slug");
 const uuid = require("uuid").v4;
 const catchErrors = require("../../common/catchErrors");
+const { API_URL } = require("../../common/config");
 
 exports.importTasks = catchErrors(async (req, res) => {
   const {
@@ -60,7 +61,7 @@ exports.importTasks = catchErrors(async (req, res) => {
   const promises = [];
   tasks.forEach((task) =>
     promises.push(
-      fetch(`http://localhost:8000/tasks`, {
+      fetch(`${API_URL}/tasks`, {
         method: "POST",
         body: JSON.stringify(task),
         headers: { "Content-Type": "application/json" },
@@ -88,7 +89,7 @@ exports.exportAll = catchErrors(async (req, res) => {
       '.json"',
   });
 
-  response = await fetch(`https://x-check-app-rest-server.herokuapp.com/tasks`);
+  response = await fetch(`${API_URL}/tasks`);
   const tasks = await response.json();
 
   const result = tasks.map((task) => ({
