@@ -14,8 +14,11 @@
     "cors": "^2.8.5",
     "dateformat": "^3.0.3",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
     "form-data": "^3.0.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "slug": "^3.3.4",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
