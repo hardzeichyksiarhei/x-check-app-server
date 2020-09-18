@@ -3,7 +3,7 @@ const uuid = require("uuid").v4;
 const dateFormat = require("dateformat");
 
 class Task {
-  static toExport(task) {
+  static toExportTypeRSS(task) {
     return {
       taskName: task.title,
       criteria: task.categories
@@ -25,7 +25,15 @@ class Task {
     };
   }
 
-  static toImport(task, authorId) {
+  static toExportTypeMD(task) {
+    return task;
+  }
+
+  static toExportTypeCUSTOM(task) {
+    return task;
+  }
+
+  static toImportTypeRSS(task, authorId) {
     const tempTask = {
       authorId: Number(authorId),
       title: task.taskName,
@@ -67,6 +75,10 @@ class Task {
       ...tempTask,
       categories,
     };
+  }
+
+  static toImportTypeCUSTOM(task) {
+    return task;
   }
 }
 

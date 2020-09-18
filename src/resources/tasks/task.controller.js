@@ -4,7 +4,7 @@ const catchErrors = require("../../common/catchErrors");
 const { API_URL } = require("../../common/config");
 const Task = require("./task.model");
 
-exports.importTasks = catchErrors(async (req, res) => {
+exports.import = catchErrors(async (req, res) => {
   const {
     files: { file },
   } = req;
@@ -41,6 +41,9 @@ exports.exportById = catchErrors(async (req, res) => {
   let response;
 
   const { taskId } = req.params;
+  let { type } = req.query;
+
+  type = ["rss", "custom", "md"].includes(type) ? type : "rss"; // rss | custom | md
 
   response = await fetch(`${API_URL}/tasks/${taskId}`);
   const task = await response.json();
@@ -55,20 +58,32 @@ exports.exportById = catchErrors(async (req, res) => {
       '.json"',
   });
 
-  const result = Task.toExport(task);
+  const transformToExport = {
+    rss: Task.toExportTypeRSS,
+    md: Task.toExportTypeMD,
+    custom: Task.toExportTypeCUSTOM,
+  };
+
+  const result = transformToExport[type](task);
 
   res.end(JSON.stringify(result));
 });
 
 exports.exportAll = catchErrors(async (req, res) => {
   let response;
-  const { authorId } = req.query;
+  let { authorId, type } = req.query;
+  type = ["rss", "custom"].includes(type) ? type : "rss"; // rss | custom
 
   response = await fetch(`${API_URL}/tasks?authorId=${authorId}`);
   const tasks = await response.json();
 
+  const transformToExport = {
+    rss: Task.toExportTypeRSS,
+    custom: Task.toExportTypeCUSTOM,
+  };
+
   try {
-    const result = tasks.map((task) => Task.toExport(task));
+    const result = tasks.map((task) => transformToExport[type](task));
 
     res.writeHead(200, {
       "Content-Type": "application/json-my-attachment",
