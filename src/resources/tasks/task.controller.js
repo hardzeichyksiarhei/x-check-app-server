@@ -62,19 +62,24 @@ exports.exportById = catchErrors(async (req, res) => {
 
 exports.exportAll = catchErrors(async (req, res) => {
   let response;
+  const { authorId } = req.query;
 
-  res.writeHead(200, {
-    "Content-Type": "application/json-my-attachment",
-    "content-disposition":
-      'attachment; filename="export-tasks-' +
-      dateFormat(new Date(), "yyyy-mm-dd_hh-MM-ss") +
-      '.json"',
-  });
-
-  response = await fetch(`${API_URL}/tasks`);
+  response = await fetch(`${API_URL}/tasks?authorId=${authorId}`);
   const tasks = await response.json();
 
-  const result = tasks.map((task) => Task.toExport(task));
+  try {
+    const result = tasks.map((task) => Task.toExport(task));
 
-  res.end(JSON.stringify(result));
+    res.writeHead(200, {
+      "Content-Type": "application/json-my-attachment",
+      "content-disposition":
+        'attachment; filename="export-tasks-' +
+        dateFormat(new Date(), "yyyy-mm-dd_hh-MM-ss") +
+        '.json"',
+    });
+
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    res.sendStatus(500);
+  }
 });
