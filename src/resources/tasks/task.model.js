@@ -77,7 +77,7 @@ class Task {
     };
   }
 
-  static toImportTypeCUSTOM(task) {
+  static toImportTypeCUSTOM(task, authorId) {
     return task;
   }
 }

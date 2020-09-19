@@ -10,12 +10,20 @@ exports.import = catchErrors(async (req, res) => {
   } = req;
 
   const { authorId } = req.body;
+  let { type } = req.query;
+
+  type = ["rss", "custom"].includes(type) ? type : "rss"; // rss | custom
+
+  const transformToExport = {
+    rss: Task.toImportTypeRSS,
+    custom: Task.toImportTypeCUSTOM,
+  };
 
   let items = JSON.parse(file.data);
 
   if (!Array.isArray(items)) items = [items];
 
-  const tasks = items.map((task) => Task.toImport(task, authorId));
+  const tasks = items.map((task) => transformToExport[type](task, authorId));
 
   const promises = [];
   tasks.forEach((task) =>
