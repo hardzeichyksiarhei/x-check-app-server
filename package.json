@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
     "form-data": "^3.0.0",
+    "json2md": "^1.7.1",
     "node-fetch": "^2.6.0",
     "slug": "^3.3.4",
     "uuid": "^8.3.0"

@@ -4,6 +4,8 @@ const catchErrors = require("../../common/catchErrors");
 const { API_URL } = require("../../common/config");
 const Task = require("./task.model");
 
+const FILE_EXTENSIONS = { rss: "json", custom: "json", md: "md" };
+
 exports.import = catchErrors(async (req, res) => {
   const {
     files: { file },
@@ -56,16 +58,6 @@ exports.exportById = catchErrors(async (req, res) => {
   response = await fetch(`${API_URL}/tasks/${taskId}`);
   const task = await response.json();
 
-  res.writeHead(200, {
-    "Content-Type": "application/json-my-attachment",
-    "content-disposition":
-      'attachment; filename="' +
-      task.slug +
-      "-" +
-      dateFormat(new Date(), "yyyy-mm-dd_hh-MM-ss") +
-      '.json"',
-  });
-
   const transformToExport = {
     rss: Task.toExportTypeRSS,
     md: Task.toExportTypeMD,
@@ -74,7 +66,23 @@ exports.exportById = catchErrors(async (req, res) => {
 
   const result = transformToExport[type](task);
 
-  res.end(JSON.stringify(result));
+  res.writeHead(200, {
+    "Content-Type": "application/" + FILE_EXTENSIONS[type] + "-attachment",
+    "content-disposition":
+      'attachment; filename="' +
+      task.slug +
+      "-" +
+      dateFormat(new Date(), "yyyy-mm-dd_hh-MM-ss") +
+      "." +
+      FILE_EXTENSIONS[type] +
+      '"',
+  });
+
+  if (type === "md") {
+    res.end(result);
+  } else {
+    res.end(JSON.stringify(result));
+  }
 });
 
 exports.exportAll = catchErrors(async (req, res) => {

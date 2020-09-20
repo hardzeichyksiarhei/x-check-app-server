@@ -1,6 +1,7 @@
 const slug = require("slug");
 const uuid = require("uuid").v4;
 const dateFormat = require("dateformat");
+const json2md = require("json2md");
 
 class Task {
   static toExportTypeRSS(task) {
@@ -26,7 +27,27 @@ class Task {
   }
 
   static toExportTypeMD(task) {
-    return task;
+    const result = [{ h1: task.title }, { h2: "Критерии оценки:" }];
+
+    task.categories.forEach((category) => {
+      result.push({
+        ul: [
+          `${category.title}`,
+          {
+            ul: category.criteria.map(
+              (criterion) =>
+                `${criterion.text} ${
+                  Number(criterion.score) > 0
+                    ? "+" + criterion.score
+                    : criterion.score
+                }`
+            ),
+          },
+        ],
+      });
+    });
+
+    return json2md(result);
   }
 
   static toExportTypeCUSTOM(task) {
@@ -78,6 +99,7 @@ class Task {
   }
 
   static toImportTypeCUSTOM(task, authorId) {
+    // TODO: remove id & replace id in categories (criteria)
     return task;
   }
 }
