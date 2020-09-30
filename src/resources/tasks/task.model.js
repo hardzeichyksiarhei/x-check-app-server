@@ -109,7 +109,16 @@ class Task {
     const md = new MarkdownIt();
     const parsed = md.parse(task);
     const result = parseTaskMdToJSON(parsed);
-    return result;
+    return {
+      ...result,
+      state: "PUBLISHED",
+      slug: slug(result.title),
+      created_at: dateFormat(new Date(), "yyyy-mm-dd hh:MM:ss"),
+      updated_at: null,
+      startDate: null,
+      endDate: null,
+      authorId: Number(authorId),
+    };
   }
 }
 

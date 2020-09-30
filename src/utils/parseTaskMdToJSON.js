@@ -1,3 +1,5 @@
+const uuid = require("uuid").v4;
+
 exports.parseTaskMdToJSON = (json) => {
   let haveTaskName = false;
   let haveTaskDiscription = false;
@@ -11,7 +13,7 @@ exports.parseTaskMdToJSON = (json) => {
     const disrition = [...str]
       .reverse()
       .reduce((a, e) => {
-        if (e === ">") stoper = true;
+        if (e === "+" || e === "-") stoper = true;
         score += !stoper ? e : "";
         return stoper ? a + e : a;
       }, "")
@@ -53,7 +55,9 @@ exports.parseTaskMdToJSON = (json) => {
           const isContent = e.content !== "";
           currentCategoryIndex +=
             isContent && e.content !== currentCategory ? 1 : 0;
-          currentCategory = isContent ? e.content : currentCategory;
+          currentCategory = isContent
+            ? e.content.split("*").join("")
+            : currentCategory;
           if (isContent)
             reternedData = {
               categories: a.categories
@@ -70,6 +74,8 @@ exports.parseTaskMdToJSON = (json) => {
           reternedData["categories"][currentCategoryIndex]["criteria"].push({
             text: separationDiscription(e.content).disrition,
             score: separationDiscription(e.content).score,
+            availability: [],
+            id: uuid(),
           });
         }
         break;
