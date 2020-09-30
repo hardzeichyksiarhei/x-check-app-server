@@ -100,7 +100,7 @@ class Task {
     };
   }
 
-  static toImportTypeCUSTOM(task, authorId) {
+  static toImportTypeCUSTOM({ id, ...task }, authorId) {
     // TODO: remove id & replace id in categories (criteria)
     return task;
   }
