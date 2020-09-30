@@ -2,6 +2,7 @@ const slug = require("slug");
 const uuid = require("uuid").v4;
 const dateFormat = require("dateformat");
 const json2md = require("json2md");
+const MarkdownIt = require("markdown-it");
 
 class Task {
   static toExportTypeRSS(task) {
@@ -101,6 +102,11 @@ class Task {
   static toImportTypeCUSTOM(task, authorId) {
     // TODO: remove id & replace id in categories (criteria)
     return task;
+  }
+
+  static toImportTypeMD(task, authorId) {
+    const md = new MarkdownIt();
+    return md.parse(task);
   }
 }
 

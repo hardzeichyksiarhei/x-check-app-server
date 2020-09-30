@@ -14,37 +14,45 @@ exports.import = catchErrors(async (req, res) => {
   const { authorId } = req.body;
   let { type } = req.query;
 
-  type = ["rss", "custom"].includes(type) ? type : "rss"; // rss | custom
+  type = ["rss", "custom", "md"].includes(type) ? type : "rss"; // rss | custom | md
 
-  const transformToExport = {
+  const transformToImport = {
     rss: Task.toImportTypeRSS,
     custom: Task.toImportTypeCUSTOM,
+    md: Task.toImportTypeMD,
   };
 
-  let items = JSON.parse(file.data);
+  if (type === "md") {
+    const rawData = file.data.toString("utf8");
+    const task = transformToImport[type](rawData, authorId);
 
-  if (!Array.isArray(items)) items = [items];
+    res.status(200).json(task);
+  } else {
+    let items = JSON.parse(file.data);
 
-  const tasks = items.map((task) => transformToExport[type](task, authorId));
+    if (!Array.isArray(items)) items = [items];
 
-  const promises = [];
-  tasks.forEach((task) =>
-    promises.push(
-      fetch(`${API_URL}/tasks`, {
-        method: "POST",
-        body: JSON.stringify(task),
-        headers: { "Content-Type": "application/json" },
+    const tasks = items.map((task) => transformToImport[type](task, authorId));
+
+    const promises = [];
+    tasks.forEach((task) =>
+      promises.push(
+        fetch(`${API_URL}/tasks`, {
+          method: "POST",
+          body: JSON.stringify(task),
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+    );
+
+    Promise.all(promises)
+      .then(() => {
+        res.sendStatus(200);
       })
-    )
-  );
-
-  Promise.all(promises)
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(() => {
-      res.sendStatus(500);
-    });
+      .catch(() => {
+        res.sendStatus(500);
+      });
+  }
 });
 
 exports.exportById = catchErrors(async (req, res) => {
