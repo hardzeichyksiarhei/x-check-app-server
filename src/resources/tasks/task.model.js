@@ -3,6 +3,7 @@ const uuid = require("uuid").v4;
 const dateFormat = require("dateformat");
 const json2md = require("json2md");
 const MarkdownIt = require("markdown-it");
+const { parseTaskMdToJSON } = require("../../utils/parseTaskMdToJSON");
 
 class Task {
   static toExportTypeRSS(task) {
@@ -106,7 +107,9 @@ class Task {
 
   static toImportTypeMD(task, authorId) {
     const md = new MarkdownIt();
-    return md.parse(task);
+    const parsed = md.parse(task);
+    const result = parseTaskMdToJSON(parsed);
+    return result;
   }
 }
 
