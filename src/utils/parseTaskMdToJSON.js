@@ -11,7 +11,7 @@ exports.parseTaskMdToJSON = (json) => {
       str.slice(0, str.lastIndexOf(score)) +
       str.slice(str.lastIndexOf(score) + score.length);
 
-    return { score: Number(score), description };
+    return { score: String(Number(score)), description };
   };
 
   const reducer = (a, e, i, legacy) => {
