@@ -1,5 +1,3 @@
-const uuid = require("uuid").v4;
-
 exports.parseTaskMdToJSON = (json) => {
   let haveTaskName = false;
   let haveTaskDiscription = false;
@@ -10,18 +8,18 @@ exports.parseTaskMdToJSON = (json) => {
   const separationDiscription = (str) => {
     let score = "";
     let stoper = false;
-    const disrition = [...str]
+    const description = [...str]
       .reverse()
       .reduce((a, e) => {
-        if (e === "+" || e === "-") stoper = true;
         score += !stoper ? e : "";
+        if (e === "+" || e === "-") stoper = true;
         return stoper ? a + e : a;
       }, "")
       .split("")
       .reverse()
       .join("");
     score = score.split("").reverse().join("").trim();
-    return { score, disrition };
+    return { score, description };
   };
 
   const reducer = (a, e, i, legasy) => {
@@ -72,11 +70,15 @@ exports.parseTaskMdToJSON = (json) => {
             if (!reternedData["categories"][currentCategoryIndex]["criteria"])
               reternedData["categories"][currentCategoryIndex]["criteria"] = [];
           reternedData["categories"][currentCategoryIndex]["criteria"].push({
-            text: separationDiscription(e.content).disrition,
+            text: separationDiscription(e.content).description,
             score: separationDiscription(e.content).score,
             availability: [],
-            id: uuid(),
           });
+        }
+
+        if (e.level === 5) {
+          haveTaskDiscription = !haveTaskDiscription;
+          reternedData = a;
         }
         break;
       }
