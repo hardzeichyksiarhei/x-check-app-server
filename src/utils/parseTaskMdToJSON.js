@@ -1,11 +1,11 @@
 exports.parseTaskMdToJSON = (json) => {
   let haveTaskName = false;
-  let haveTaskDiscription = false;
+  let haveTaskDescription = false;
   let haveGradeCriterion = false;
   let currentCategory = "";
   let currentCategoryIndex = -1;
 
-  const separationDiscription = (str) => {
+  const separationDescription = (str) => {
     let score = "";
     let stoper = false;
     const description = [...str]
@@ -31,19 +31,21 @@ exports.parseTaskMdToJSON = (json) => {
         haveTaskName = reternedData.title;
         break;
       }
-      case !haveTaskDiscription: {
+      case !haveTaskDescription: {
         reternedData =
           e.tag !== ""
             ? {
-                disription: a.disription
-                  ? a.disription +
+                description: a.description
+                  ? a.description +
                     `<${e.type.includes("close") ? "/" : ""}${e.tag}>`
                   : `<${e.type.includes("close") ? "/" : ""}${e.tag}>`,
               }
             : {
-                disription: a.disription ? a.disription + e.content : e.content,
+                description: a.description
+                  ? a.description + e.content
+                  : e.content,
               };
-        haveTaskDiscription = legasy[i + 1].content === "Критерии оценки:";
+        haveTaskDescription = legasy[i + 1].content === "Критерии оценки:";
         break;
       }
 
@@ -70,14 +72,14 @@ exports.parseTaskMdToJSON = (json) => {
             if (!reternedData["categories"][currentCategoryIndex]["criteria"])
               reternedData["categories"][currentCategoryIndex]["criteria"] = [];
           reternedData["categories"][currentCategoryIndex]["criteria"].push({
-            text: separationDiscription(e.content).description,
-            score: separationDiscription(e.content).score,
+            text: separationDescription(e.content).description,
+            score: separationDescription(e.content).score,
             availability: [],
           });
         }
 
         if (e.level === 5) {
-          haveTaskDiscription = !haveTaskDiscription;
+          haveTaskDescription = !haveTaskDescription;
           reternedData = a;
         }
         break;
