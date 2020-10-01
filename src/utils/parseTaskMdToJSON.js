@@ -6,23 +6,15 @@ exports.parseTaskMdToJSON = (json) => {
   let currentCategoryIndex = -1;
 
   const separationDescription = (str) => {
-    let score = "";
-    let stoper = false;
-    const description = [...str]
-      .reverse()
-      .reduce((a, e) => {
-        score += !stoper ? e : "";
-        if (e === "+" || e === "-") stoper = true;
-        return stoper ? a + e : a;
-      }, "")
-      .split("")
-      .reverse()
-      .join("");
-    score = score.split("").reverse().join("").trim();
-    return { score, description };
+    const score = str.match(/([\+?\-?0-9]+)/g).pop();
+    const description =
+      str.slice(0, str.lastIndexOf(score)) +
+      str.slice(str.lastIndexOf(score) + score.length);
+
+    return { score: Number(score), description };
   };
 
-  const reducer = (a, e, i, legasy) => {
+  const reducer = (a, e, i, legacy) => {
     let reternedData = {};
 
     switch (true) {
@@ -45,12 +37,14 @@ exports.parseTaskMdToJSON = (json) => {
                   ? a.description + e.content
                   : e.content,
               };
-        haveTaskDescription = legasy[i + 1].content === "Критерии оценки:";
+        haveTaskDescription =
+          legacy[i + 1] && legacy[i + 1].content === "Критерии оценки:";
         break;
       }
 
       case !haveGradeCriterion: {
         reternedData = {};
+        let next = false;
         if (e.level === 3) {
           const isContent = e.content !== "";
           currentCategoryIndex +=
@@ -61,9 +55,18 @@ exports.parseTaskMdToJSON = (json) => {
           if (isContent)
             reternedData = {
               categories: a.categories
-                ? [...a.categories].concat([{ title: currentCategory }])
-                : [{ title: currentCategory }],
+                ? [...a.categories].concat([
+                    {
+                      title: separationDescription(currentCategory).description,
+                    },
+                  ])
+                : [
+                    {
+                      title: separationDescription(currentCategory).description,
+                    },
+                  ],
             };
+          next = true;
         }
         if (e.level === 5) {
           const isContent = e.content !== "";
@@ -76,12 +79,14 @@ exports.parseTaskMdToJSON = (json) => {
             score: separationDescription(e.content).score,
             availability: [],
           });
+          next = true;
         }
 
-        if (e.level === 5) {
+        if (!next && e.tag === "h3") {
           haveTaskDescription = !haveTaskDescription;
           reternedData = a;
         }
+        next = false;
         break;
       }
       default:
