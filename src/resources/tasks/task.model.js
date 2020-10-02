@@ -29,7 +29,11 @@ class Task {
   }
 
   static toExportTypeMD(task) {
-    const result = [{ h1: task.title }, { h2: "Критерии оценки:" }];
+    const result = [
+      { h1: task.title },
+      { p: task.description },
+      { h2: "Критерии оценки:" },
+    ];
 
     task.categories.forEach((category) => {
       result.push({
@@ -106,8 +110,11 @@ class Task {
   }
 
   static toImportTypeMD(task, authorId) {
-    const md = new MarkdownIt();
-    const parsed = md.parse(task);
+    const md = new MarkdownIt({
+      html: true,
+      linkify: true,
+    });
+    const parsed = md.parse(task, {});
     const result = parseTaskMdToJSON(parsed);
     return {
       ...result,

@@ -4,6 +4,7 @@ exports.parseTaskMdToJSON = (json) => {
   let haveGradeCriterion = false;
   let currentCategory = "";
   let currentCategoryIndex = -1;
+  // console.log(json);
 
   const separationDescription = (str) => {
     const matchedScore = str.match(/([\+?\-?0-9]+)/g);
@@ -72,17 +73,18 @@ exports.parseTaskMdToJSON = (json) => {
             };
           next = true;
         }
-        if (e.level === 5) {
+        if (e.level > 3) {
           const isContent = e.content !== "";
           reternedData = a;
-          if (isContent)
+          if (isContent) {
             if (!reternedData["categories"][currentCategoryIndex]["criteria"])
               reternedData["categories"][currentCategoryIndex]["criteria"] = [];
-          reternedData["categories"][currentCategoryIndex]["criteria"].push({
-            text: separationDescription(e.content).description,
-            score: separationDescription(e.content).score,
-            availability: [],
-          });
+            reternedData["categories"][currentCategoryIndex]["criteria"].push({
+              text: separationDescription(e.content).description,
+              score: separationDescription(e.content).score,
+              availability: [],
+            });
+          }
           next = true;
         }
 
