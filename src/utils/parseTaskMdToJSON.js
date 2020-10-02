@@ -4,7 +4,6 @@ exports.parseTaskMdToJSON = (json) => {
   let haveGradeCriterion = false;
   let currentCategory = "";
   let currentCategoryIndex = -1;
-  // console.log(json);
 
   const separationDescription = (str) => {
     const matchedScore = str.match(/([\+?\-?0-9]+)/g);
