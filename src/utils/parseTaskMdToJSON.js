@@ -6,7 +6,11 @@ exports.parseTaskMdToJSON = (json) => {
   let currentCategoryIndex = -1;
 
   const separationDescription = (str) => {
-    const score = str.match(/([\+?\-?0-9]+)/g).pop();
+    const matchedScore = str.match(/([\+?\-?0-9]+)/g);
+    const score = matchedScore ? matchedScore.pop() : null;
+
+    if (!score) return { score: "", description: str };
+
     const description =
       str.slice(0, str.lastIndexOf(score)) +
       str.slice(str.lastIndexOf(score) + score.length);
